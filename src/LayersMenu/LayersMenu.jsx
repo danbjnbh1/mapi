@@ -1,26 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import LayerBox from '../LayerBox/LayerBox';
-// import layers from '../tests/layers';
 import styles from './LayersMenu.module.scss';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import axios from 'axios';
+import Zoom from '@material-ui/core/Zoom';
+import Button from '@material-ui/core/Button';
+import Slider from '@material-ui/core/Slider';
 
 export default function LayersMenu(props) {
   const [layers, setLayers] = useState([]);
   const [searchKey, setSearchKey] = useState('');
   const [searchResults, setSearchResults] = useState();
-
-  // useEffect(() => {
-  //   async function fetchLayers() {
-  //     const { data } = await axios.get(
-  //       'http://localhost:3001/getAdditionalLayers'
-  //     );
-  //     console.log(data);
-  //     setLayers(data);
-  //     }
-  //   fetchLayers();
-  // }, []);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -43,6 +35,10 @@ export default function LayersMenu(props) {
     })();
   }, []);
 
+  useEffect(() => {
+    console.log('ernder');
+  });
+
   function hundleSearchChange(event) {
     setSearchKey(event.target.value);
   }
@@ -60,15 +56,18 @@ export default function LayersMenu(props) {
 
   function hundleCheck(index) {
     props.setCheckedLayers((prev) => {
-      const newCheckedArray = new Set(prev);
-      if (newCheckedArray.has(index)) {
-        newCheckedArray.delete(index);
+      const CheckedLayersClone = new Set(prev);
+      if (CheckedLayersClone.has(index)) {
+        CheckedLayersClone.delete(index);
       } else {
-        newCheckedArray.add(index)
+        CheckedLayersClone.add(index);
       }
-      // newCheckedArray[index] = !newCheckedArray[index];
-      return newCheckedArray;
+      return CheckedLayersClone;
     });
+  }
+
+  function hundleOpenMenuClick() {
+    setMenuIsOpen(!menuIsOpen);
   }
 
   const Row = ({ index, style }) => {
@@ -89,34 +88,59 @@ export default function LayersMenu(props) {
   };
 
   return (
-    <div className={styles.layersMenu}>
-      <h1>שכבות מידע</h1>
-      <div className={styles.searchConteiner}>
-        <input
-          className={styles.searchInput}
-          type="text"
-          placeholder="חיפוש שכבה לפי שם"
-          value={searchKey}
-          onChange={hundleSearchChange}
-        />
-      </div>
-      <div className={styles.listContainer}>
-        <AutoSizer>
-          {({ height, width }) => (
-            <List
-              className="List"
-              height={height}
-              direction={'rtl'}
-              itemCount={searchResults.length}
-              itemSize={50}
-              width={500}
-              position={'static'}
-            >
-              {Row}
-            </List>
-          )}
-        </AutoSizer>
-      </div>
-    </div>
+    <>
+      <Button class={styles.openMenuButton} onClick={hundleOpenMenuClick}>
+        הוסף שכבות מידע
+      </Button>
+
+      <Zoom in={menuIsOpen}>
+        <div className={styles.layersMenu}>
+          <h1>שכבות מידע</h1>
+          <div className={styles.searchConteiner}>
+            <input
+              className={styles.searchInput}
+              type="text"
+              placeholder="חיפוש שכבה לפי שם"
+              value={searchKey}
+              onChange={hundleSearchChange}
+            />
+          </div>
+          <Button
+            color="primary"
+            onClick={() => props.setCheckedLayers(new Set())}
+          >
+            מחק את כל השכבות
+          </Button>
+          <label className={styles.sliderLabel} htmlFor="transparencySlider">שקיפות שכבות:</label>
+          <Slider
+            id="transparencySlider"
+            defaultValue={0}
+            step={10}
+            marks
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+            getAriaValueText={(value) => props.setTransparency(value)}
+          />
+          <div className={styles.listContainer}>
+            <AutoSizer>
+              {({ height, width }) => (
+                <List
+                  className="List"
+                  height={height}
+                  direction={'rtl'}
+                  itemCount={searchResults.length}
+                  itemSize={60}
+                  width={width}
+                  position={'static'}
+                >
+                  {Row}
+                </List>
+              )}
+            </AutoSizer>
+          </div>
+        </div>
+      </Zoom>
+    </>
   );
 }

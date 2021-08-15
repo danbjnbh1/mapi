@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
 import styles from './Map.module.scss';
-import JSITM from 'js-itm'
+import JSITM from 'js-itm';
 
 export default function Map(props) {
   const [layersSource, setLayersSource] = useState([]);
   const [bbox, setBbox] = useState();
+
   function handleApiLoaded(map, maps) {
-    console.log(JSITM);
     maps.event.addListener(map, 'bounds_changed', () => {
+      console.log("chaned");
       const { mc, Eb } = map.getBounds();
       let firstBound = mc.i + ' ' + Eb.i;
       let secondBound = mc.g + ' ' + Eb.g;
@@ -25,21 +26,37 @@ export default function Map(props) {
   useEffect(() => {
     setLayersSource(() => {
       const newLayersSource = [];
-      console.log(props.checkedLayers);
       props.checkedLayers.forEach((layerId) => {
         newLayersSource.push(
-          `{"source":{"type":"mapLayer","mapLayerId":${layerId}},"minScale":501000,'maxScale':0}`
+          `{"source":{"type":"mapLayer","mapLayerId":${layerId}},"drawingInfo":{"transparency":${props.transparency}},"minScale":501000,'maxScale':0}`
         );
       });
-      console.log(String(newLayersSource));
       return newLayersSource.toString();
     });
-  }, [props.checkedLayers]);
+  }, [props.checkedLayers, props.transparency]);
 
   const defaultProps = {
-    center: { lat: 32, lng: 35 },
+    center: { lat: 31.5, lng: 35.5 },
     zoom: 8,
   };
+
+function creatMapOptions(){
+  const israelBounds = {
+    north: 34,
+    south: 29,
+    west: 33.1,
+    east: 36.8,
+  };
+  return {
+    minZoom: 8,
+    restriction: {
+      latLngBounds: israelBounds,
+      strictBounds: false,
+    },
+
+  };
+}
+
 
   return (
     <div className={styles.map}>
@@ -49,6 +66,7 @@ export default function Map(props) {
         defaultZoom={defaultProps.zoom}
         yesIWantToUseGoogleMapApiInternals
         onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+        options={creatMapOptions}
       ></GoogleMapReact>
       <img
         className={styles.layerImg}

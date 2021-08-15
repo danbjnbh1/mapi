@@ -1,9 +1,9 @@
 .layerBox{
-  border-bottom: 1px solid lightgrey;
+  // border-bottom: 1px solid lightgrey;
   font-size: 1.3rem;
-  padding: 1rem;
+  // padding: 1rem;
+  input, label{
+    cursor: pointer;
+  }
 }
 
-input, label{
-  cursor: pointer;
-}

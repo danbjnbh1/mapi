@@ -6,12 +6,14 @@ import LayersMenu from './LayersMenu/LayersMenu';
 function App() {
 
   const [checkedLayers, setCheckedLayers] = useState(new Set());
+  const [transparency, setTransparency] = useState(0)
 
   return (
     <div className="App">
       <header className="App-header"></header>
-      <Map checkedLayers={checkedLayers} />
+      <Map transparency={transparency} checkedLayers={checkedLayers} />
       <LayersMenu
+        setTransparency={setTransparency}
         checkedLayers={checkedLayers}
         setCheckedLayers={setCheckedLayers}
       />

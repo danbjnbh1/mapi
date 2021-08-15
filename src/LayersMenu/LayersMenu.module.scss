@@ -1,29 +1,44 @@
 .layersMenu {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   box-shadow: 0 2px 4px, 0 -1px 0;
   border: 1px solid #ccc;
   background-color: #fff;
   top: 10%;
   bottom: 10%;
-  width: 500px;
+  width: 350px;
   right: 13px;
-  height: 80%;
-  
-  text-align: right !important;
+  height: 65%;
+  padding: 20px;
+  text-align: right;
   direction: rtl;
-  h1 {
-    margin-right: 1rem;
-  }
 }
 
 .listContainer{
-  height: 74%;
+  flex-grow: 1;
 }
 
 .searchInput {
   height: 30px;
-  width: 90%;
-  padding: 5px;
-  margin-right: 1rem;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
   font-size: 1.2rem;
+}
+
+.openMenuButton{
+  background: white;
+  border: none;
+  position: absolute;
+  top: 2%;
+  right: 5%;
+  padding: 10px;
+  border-radius: 5%;
+  cursor: pointer;
+}
+
+.sliderLabel{
+  color: #3f51b5;
+  text-align: center;
 }
