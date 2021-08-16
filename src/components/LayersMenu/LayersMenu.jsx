@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import LayerBox from '../LayerBox/LayerBox';
+import { LayerBox } from '../LayerBox';
 import styles from './LayersMenu.module.scss';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -8,15 +8,24 @@ import Zoom from '@material-ui/core/Zoom';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/core/Slider';
 
-export default function LayersMenu(props) {
+const LayersMenu = (props) => {
   const [layers, setLayers] = useState([]);
   const [searchKey, setSearchKey] = useState('');
   const [searchResults, setSearchResults] = useState();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
+  const extractLayersArray = (layersData) => {
+    //takes all the necessary details from the layers object
+    return layersData.map((layer) => ({
+      layer: layer.layerName,
+      caption: layer.caption,
+      layerID: layer.layerID,
+    }));
+  };
+
   useEffect(() => {
+    // fetch all layers from govmap
     (async () => {
-      const layers = [];
       const { data } = await axios.post(
         'https://ags.govmap.gov.il/Layers/GetAdditionalLayers',
         {
@@ -24,24 +33,12 @@ export default function LayersMenu(props) {
           LayersInToc: [],
         }
       );
-      for (let layer in data.data.AdditionalLayers) {
-        layers.push({
-          layer,
-          caption: data.data.AdditionalLayers[layer].caption,
-          layerID: data.data.AdditionalLayers[layer].layerID,
-        });
-      }
+      let layers = extractLayersArray(
+        Object.values(data.data.AdditionalLayers)
+      );
       setLayers(layers);
     })();
   }, []);
-
-  useEffect(() => {
-    console.log('ernder');
-  });
-
-  function hundleSearchChange(event) {
-    setSearchKey(event.target.value);
-  }
 
   useEffect(() => {
     if (searchKey === '') {
@@ -54,7 +51,11 @@ export default function LayersMenu(props) {
     }
   }, [layers, searchKey]);
 
-  function hundleCheck(index) {
+  const handleSearchChange = (event) => {
+    setSearchKey(event.target.value);
+  };
+
+  const handleCheck = (index) => {
     props.setCheckedLayers((prev) => {
       const CheckedLayersClone = new Set(prev);
       if (CheckedLayersClone.has(index)) {
@@ -64,23 +65,21 @@ export default function LayersMenu(props) {
       }
       return CheckedLayersClone;
     });
-  }
+  };
 
-  function hundleOpenMenuClick() {
+  const handleOpenMenuClick = () => {
     setMenuIsOpen(!menuIsOpen);
-  }
+  };
 
   const Row = ({ index, style }) => {
     const element = searchResults[index];
-    const layerIdx = layers.findIndex((e) => e.layer === element.layer);
     return (
       <div style={style}>
         <LayerBox
-          hundleCheck={hundleCheck}
-          checked={props.checkedLayers.has(layerIdx)}
-          index={layerIdx}
+          handleCheck={handleCheck}
+          checked={props.checkedLayers.has(element.layerID)}
           key={element.layer}
-          id={element.layer}
+          id={element.layerID}
           caption={element.caption}
         />
       </div>
@@ -89,9 +88,9 @@ export default function LayersMenu(props) {
 
   return (
     <>
-      <Button class={styles.openMenuButton} onClick={hundleOpenMenuClick}>
+      <button className={styles.openMenuButton} onClick={handleOpenMenuClick}>
         הוסף שכבות מידע
-      </Button>
+      </button>
 
       <Zoom in={menuIsOpen}>
         <div className={styles.layersMenu}>
@@ -102,7 +101,7 @@ export default function LayersMenu(props) {
               type="text"
               placeholder="חיפוש שכבה לפי שם"
               value={searchKey}
-              onChange={hundleSearchChange}
+              onChange={handleSearchChange}
             />
           </div>
           <Button
@@ -111,7 +110,9 @@ export default function LayersMenu(props) {
           >
             מחק את כל השכבות
           </Button>
-          <label className={styles.sliderLabel} htmlFor="transparencySlider">שקיפות שכבות:</label>
+          <label className={styles.sliderLabel} htmlFor="transparencySlider">
+            שקיפות שכבות:
+          </label>
           <Slider
             id="transparencySlider"
             defaultValue={0}
@@ -120,7 +121,7 @@ export default function LayersMenu(props) {
             min={0}
             max={100}
             valueLabelDisplay="auto"
-            getAriaValueText={(value) => props.setTransparency(value)}
+            onChange={(e, value) => props.setTransparency(value)}
           />
           <div className={styles.listContainer}>
             <AutoSizer>
@@ -143,4 +144,6 @@ export default function LayersMenu(props) {
       </Zoom>
     </>
   );
-}
+};
+
+export default LayersMenu;

@@ -34,8 +34,11 @@
   top: 2%;
   right: 5%;
   padding: 10px;
-  border-radius: 5%;
+  border-radius: 3%;
   cursor: pointer;
+  &:hover{
+    background-color: #dddddf;
+  }
 }
 
 .sliderLabel{

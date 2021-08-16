@@ -1,15 +1,11 @@
 import styles from './LayerBox.module.scss';
-import './icons/layersIcons.css'
 
-// import './layer_icons.css'
-
-export default function LayerBox(props) {
-
+const LayerBox = (props) => {
   return (
     <div className={styles.layerBox}>
       <input
         id={props.id}
-        onChange={() => props.hundleCheck(props.index)}
+        onChange={() => props.handleCheck(props.id)}
         value={props.caption}
         type="checkbox"
         checked={props.checked}
@@ -17,4 +13,6 @@ export default function LayerBox(props) {
       <label htmlFor={props.id}>{props.caption}</label>
     </div>
   );
-}
+};
+
+export default LayerBox;

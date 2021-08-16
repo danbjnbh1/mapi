@@ -1,12 +1,10 @@
-import './App.css';
 import React, { useState } from 'react';
-import Map from './Map/Map';
-import LayersMenu from './LayersMenu/LayersMenu';
+import { Map } from './components/Map';
+import { LayersMenu } from './components/LayersMenu';
 
-function App() {
-
+const App = () => {
   const [checkedLayers, setCheckedLayers] = useState(new Set());
-  const [transparency, setTransparency] = useState(0)
+  const [transparency, setTransparency] = useState(0);
 
   return (
     <div className="App">
@@ -19,6 +17,6 @@ function App() {
       />
     </div>
   );
-}
+};
 
 export default App;
